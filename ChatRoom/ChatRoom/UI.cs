@@ -16,5 +16,11 @@ namespace ChatRoom
         {
             return Console.ReadLine();
         }
+
+        public static string GetUserName()
+        {
+            Console.WriteLine("Please provide a username:");
+            return Console.ReadLine();
+        }
     }
 }

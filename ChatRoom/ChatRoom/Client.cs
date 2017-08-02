@@ -12,11 +12,24 @@ namespace ChatRoom
     {
         TcpClient clientSocket;
         NetworkStream stream;
+        string userName;
+
+        public string UserName { get { return userName; } set { userName = value; } }
+
         public Client(string IP, int port)
         {
+            //Create Setup method
+            userName = UI.GetUserName();
             clientSocket = new TcpClient();
-            clientSocket.Connect(IPAddress.Parse(IP), port);
-            stream = clientSocket.GetStream();
+            try
+            {
+                clientSocket.Connect(IPAddress.Parse(IP), port);
+                stream = clientSocket.GetStream();
+            }
+            catch (Exception)
+            {
+                Console.WriteLine("Server Not Found");
+            }
         }
         public void Send()
         {

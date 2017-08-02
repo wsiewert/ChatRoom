@@ -16,7 +16,8 @@ namespace Server
         {
             stream = Stream;
             client = Client;
-            UserId = "495933b6-1762-47a1-b655-483510072e73";
+            //UserId = "495933b6-1762-47a1-b655-483510072e73";
+            UserId = "id";
         }
         public void Send(string Message)
         {

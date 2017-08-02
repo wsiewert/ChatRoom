@@ -10,8 +10,9 @@ namespace Server
     {
         static void Main(string[] args)
         {
-                new Server().Run();
-                Console.ReadLine();
+            Server server = new Server();
+            server.Run();
+            Console.ReadLine();
         }
     }
 }

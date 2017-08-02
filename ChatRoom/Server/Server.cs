@@ -12,7 +12,8 @@ namespace Server
 {
     class Server
     {
-        public static Client client;
+        //public static Client client;
+        Dictionary<string, Client> clientDictionary = new Dictionary<string, Client>();
         TcpListener server;
         public Server()
         {
@@ -21,21 +22,46 @@ namespace Server
         }
         public void Run()
         {
-            AcceptClient();
-            string message = client.Recieve();
-            Respond(message);
+            //Create threads to run accept clients and message broadcasting
+            Task clientAccept = new Task(() => GetClients());
+            clientAccept.Start();
+
+            //string message = client.Recieve();
+            Respond("[Placeholder]");
         }
+
+        private void GetClients()
+        {
+            while (clientDictionary.Count < 5)
+            {
+                AcceptClient();
+            }
+        }
+
         private void AcceptClient()
         {
             TcpClient clientSocket = default(TcpClient);
             clientSocket = server.AcceptTcpClient();
             Console.WriteLine("Connected");
             NetworkStream stream = clientSocket.GetStream();
-            client = new Client(stream, clientSocket);
+            Client newClient = new Client(stream, clientSocket);
+
+            //add client to dictionary
+            string userId = clientDictionary.Count.ToString();
+            newClient.UserId = userId;
+            clientDictionary.Add(newClient.UserId, newClient);
+            Console.WriteLine("User: {0}",userId);
         }
         private void Respond(string body)
         {
-            client.Send(body);
+            //client.Send(body);
         }
+
+        private void FindClientById()
+        {
+
+        }
+
+        //Dictionary of clients, key: userid, value: client object.
     }
 }
