@@ -16,6 +16,8 @@ namespace Server
         Dictionary<string, Client> clientDictionary = new Dictionary<string, Client>();
         Queue<string> messages = new Queue<string>();
         TcpListener server;
+        int clientConnectionsCount = 0;
+
         public Server()
         {
             server = new TcpListener(IPAddress.Parse("127.0.0.1"), 9999);
@@ -47,22 +49,43 @@ namespace Server
             NetworkStream stream = clientSocket.GetStream();
             Client newClient = new Client(stream, clientSocket);
 
-            //add client to dictionary
-            string userId = clientDictionary.Count.ToString();
+            //change generate userID using uct time.
+            string userId = clientConnectionsCount.ToString();
             newClient.UserId = userId;
             clientDictionary.Add(newClient.UserId, newClient);
             Console.WriteLine(newClient.userName + "[Logged In]");
+            clientConnectionsCount++;
 
-            //start new "check receiving" task here, NOT inside the client object.
             //Task client.recieving...
-            Task clientMessageReceiving = new Task(() => AddClientMessageToQueue(newClient));
+            Task clientMessageReceiving = new Task(() => CheckIncomingCientMessages(newClient));
             clientMessageReceiving.Start();
         }
 
-        private void AddClientMessageToQueue(Client client)
+        private void CheckIncomingCientMessages(Client client)
+        {
+            bool clientConnected = true;
+            while (clientConnected)
+            {
+                try
+                {
+                    string clientMessage = client.Recieve();
+                    //add client message to queue
+                }
+                catch (Exception)
+                {
+                    clientConnected = false;
+                    RemoveClientById(client.UserId);
+                }
+            }
+        }
+
+        private void AddClientMessageToQueue(string userId, string clientMessage)
         {
             //try-catch, if exception thrown, exit function(results in exit of task) and console.write("client disconnected");
             //use removeClientByUserName() to remove from dictionary
+
+            //try catch
+            //loop to check 
         }
 
         private void GetMessageFromQueue()
@@ -77,9 +100,16 @@ namespace Server
             //try catch per client to see if someone disconnected during a message broadcast, then delete person from dictionary
         }
 
-        private void RemoveClientByUserName()
+        private void RemoveClientById(string userId)
         {
+            //remove user from dictionary
+            Console.WriteLine("[Disconnected]");
+        }
 
+        private string GenerateUserId()
+        {
+            //use UCT datetime in milliseconds to create unique userId.
+            return "";
         }
     }
 }
