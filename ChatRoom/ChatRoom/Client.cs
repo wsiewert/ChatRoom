@@ -18,13 +18,15 @@ namespace ChatRoom
 
         public Client(string IP, int port)
         {
-            //Create Setup method
+            //Create Setup method for the following
             userName = UI.GetUserName();
             clientSocket = new TcpClient();
             try
             {
                 clientSocket.Connect(IPAddress.Parse(IP), port);
                 stream = clientSocket.GetStream();
+                byte[] userNameMessage = Encoding.ASCII.GetBytes(userName);
+                stream.Write(userNameMessage, 0, userNameMessage.Count());
             }
             catch (Exception)
             {

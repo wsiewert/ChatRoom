@@ -14,6 +14,7 @@ namespace Server
     {
         //public static Client client;
         Dictionary<string, Client> clientDictionary = new Dictionary<string, Client>();
+        Queue<string> messages = new Queue<string>();
         TcpListener server;
         public Server()
         {
@@ -50,18 +51,35 @@ namespace Server
             string userId = clientDictionary.Count.ToString();
             newClient.UserId = userId;
             clientDictionary.Add(newClient.UserId, newClient);
-            Console.WriteLine("User: {0}",userId);
+            Console.WriteLine(newClient.userName + "[Logged In]");
+
+            //start new "check receiving" task here, NOT inside the client object.
+            //Task client.recieving...
+            Task clientMessageReceiving = new Task(() => AddClientMessageToQueue(newClient));
+            clientMessageReceiving.Start();
         }
+
+        private void AddClientMessageToQueue(Client client)
+        {
+            //try-catch, if exception thrown, exit function(results in exit of task) and console.write("client disconnected");
+            //use removeClientByUserName() to remove from dictionary
+        }
+
+        private void GetMessageFromQueue()
+        {
+            
+        }
+
         private void Respond(string body)
         {
             //client.Send(body);
+            //make into async task. UpdateMessageQueue();
+            //try catch per client to see if someone disconnected during a message broadcast, then delete person from dictionary
         }
 
-        private void FindClientById()
+        private void RemoveClientByUserName()
         {
 
         }
-
-        //Dictionary of clients, key: userid, value: client object.
     }
 }
