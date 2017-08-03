@@ -14,7 +14,7 @@ namespace Server
     {
         //public static Client client;
         Dictionary<string, Client> clientDictionary = new Dictionary<string, Client>();
-        Queue<string> messages = new Queue<string>();
+        Queue<string> messageQueue = new Queue<string>();
         TcpListener server;
         int clientConnectionsCount = 0;
 
@@ -69,7 +69,8 @@ namespace Server
                 try
                 {
                     string clientMessage = client.Recieve();
-                    //add client message to queue
+                    AddMessageToQueue(clientMessage);
+                    BroadcastNewMessage(clientMessage);
                 }
                 catch (Exception)
                 {
@@ -79,18 +80,22 @@ namespace Server
             }
         }
 
-        private void AddClientMessageToQueue(string userId, string clientMessage)
+        private void AddMessageToQueue(string clientMessage)
         {
-            //try-catch, if exception thrown, exit function(results in exit of task) and console.write("client disconnected");
-            //use removeClientByUserName() to remove from dictionary
-
-            //try catch
-            //loop to check 
+            messageQueue.Enqueue(clientMessage);
         }
 
-        private void GetMessageFromQueue()
+        private void BroadcastNewMessage(string clientMessage)
         {
-            
+            foreach (KeyValuePair<string, Client> client in clientDictionary)
+            {
+                client.Value.Send(clientMessage);
+            }
+        }
+
+        private string GetMessageFromQueue()
+        {
+            return messageQueue.Peek();
         }
 
         private void Respond(string body)
