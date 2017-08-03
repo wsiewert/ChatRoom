@@ -74,7 +74,7 @@ namespace Server
                 catch (Exception)
                 {
                     clientConnected = false;
-                    RemoveClientById(client.UserId);
+                    RemoveClient(client.UserId,client);
                 }
             }
         }
@@ -100,16 +100,11 @@ namespace Server
             //try catch per client to see if someone disconnected during a message broadcast, then delete person from dictionary
         }
 
-        private void RemoveClientById(string userId)
+        private void RemoveClient(string userId, Client client)
         {
             //remove user from dictionary
-            Console.WriteLine("[Disconnected]");
-        }
-
-        private string GenerateUserId()
-        {
-            //use UCT datetime in milliseconds to create unique userId.
-            return "";
+            Console.WriteLine("{0} [Disconnected]", client.userName);
+            clientDictionary.Remove(userId);
         }
     }
 }
