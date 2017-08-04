@@ -18,19 +18,17 @@ namespace Server
         {
             stream = Stream;
             client = Client;
-            //UserId = "495933b6-1762-47a1-b655-483510072e73";
             UserId = "id";
 
             byte[] recievedUserName = new byte[256];
             stream.Read(recievedUserName, 0, recievedUserName.Length);
             string recievedUserNameString = Encoding.ASCII.GetString(recievedUserName);
             userName = recievedUserNameString;
-
-            //Task messageRecieving = new Task(() => GetMessages());
-            //messageRecieving.Start();
         }
+
         public void Send(string Message)
         {
+            //FIX TRY CATCH
             Console.WriteLine("<send();> " + userName);
             byte[] message = Encoding.ASCII.GetBytes(Message);
             try
@@ -50,8 +48,7 @@ namespace Server
             Console.WriteLine("<Recieve();> " + userName);
             byte[] recievedMessage = new byte[256];
             stream.Read(recievedMessage, 0, recievedMessage.Length);
-            string recievedMessageString = Encoding.ASCII.GetString(recievedMessage);
-            //Console.WriteLine(recievedMessageString);
+            string recievedMessageString = Encoding.ASCII.GetString(recievedMessage).TrimEnd('\0');
             return recievedMessageString;
             //possibly add message to private client queue.
         }

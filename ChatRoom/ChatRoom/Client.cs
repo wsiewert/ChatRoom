@@ -60,14 +60,8 @@ namespace ChatRoom
         {
             byte[] recievedMessage = new byte[256];
             stream.Read(recievedMessage, 0, recievedMessage.Length);
-            UI.DisplayMessage(Encoding.ASCII.GetString(recievedMessage));
+            UI.DisplayMessage(Encoding.ASCII.GetString(recievedMessage).TrimEnd('\0'));
             Console.WriteLine("<Recieved Message>");
-        }
-
-        private string TrimByteArrayMessage()
-        {
-            //Trim extra nulls at end of byte[]
-            return "";
         }
     }
 }

@@ -53,7 +53,8 @@ namespace Server
             clientConnectionsCount++;
             newClient.UserId = userId;
             clientDictionary.Add(newClient.UserId, newClient);
-            AddMessageToQueue(newClient.userName + "[Logged In]");
+            string loginMessage = newClient.userName + " [Logged In]";
+            AddMessageToQueue(loginMessage);
 
             //Task client.recieving...
             Task clientMessageReceiving = new Task(() => CheckIncomingCientMessages(newClient));
