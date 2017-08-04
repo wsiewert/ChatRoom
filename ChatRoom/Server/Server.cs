@@ -23,14 +23,16 @@ namespace Server
             server = new TcpListener(IPAddress.Parse("127.0.0.1"), 9999);
             server.Start();
         }
+
         public void Run()
         {
-            //Create threads to run accept clients and message broadcasting
-            Task clientAccept = new Task(() => GetClients());
-            clientAccept.Start();
+            //Thread to accept new clients
+            Task checkNewClients = new Task(() => GetClients());
+            checkNewClients.Start();
 
-            //string message = client.Recieve();
-            Respond("[Placeholder]");
+            //Thread to check for new messages
+            Task checkNewMessages = new Task(() => CheckMessageQueue());
+            checkNewMessages.Start();
         }
 
         private void GetClients()
@@ -45,16 +47,15 @@ namespace Server
         {
             TcpClient clientSocket = default(TcpClient);
             clientSocket = server.AcceptTcpClient();
-            Console.WriteLine("Connected");
             NetworkStream stream = clientSocket.GetStream();
             Client newClient = new Client(stream, clientSocket);
 
-            //change generate userID using uct time.
             string userId = clientConnectionsCount.ToString();
+            clientConnectionsCount++;
             newClient.UserId = userId;
             clientDictionary.Add(newClient.UserId, newClient);
-            Console.WriteLine(newClient.userName + "[Logged In]");
-            clientConnectionsCount++;
+            AddMessageToQueue(newClient.userName + "[Logged In]");
+            
 
             //Task client.recieving...
             Task clientMessageReceiving = new Task(() => CheckIncomingCientMessages(newClient));
@@ -70,7 +71,6 @@ namespace Server
                 {
                     string clientMessage = client.Recieve();
                     AddMessageToQueue(clientMessage);
-                    BroadcastNewMessage(clientMessage);
                 }
                 catch (Exception)
                 {
@@ -80,9 +80,25 @@ namespace Server
             }
         }
 
+        private void CheckMessageQueue()
+        {
+            while (true)
+            {
+                if (messageQueue.Count > 0)
+                {
+                    for (int i = 0; i < messageQueue.Count; i++)
+                    {
+                        BroadcastNewMessage(messageQueue.Dequeue());
+                        //add to .txt file
+                    }
+                }
+            }            
+        }
+
         private void AddMessageToQueue(string message)
         {
             messageQueue.Enqueue(message);
+            Console.WriteLine(message);
         }
 
         private void BroadcastNewMessage(string clientMessage)
@@ -91,11 +107,6 @@ namespace Server
             {
                 client.Value.Send(clientMessage);
             }
-        }
-
-        private string GetMessageFromQueue()
-        {
-            return messageQueue.Peek();
         }
 
         private void Respond(string body)
@@ -107,11 +118,9 @@ namespace Server
 
         private void RemoveClient(string userId, Client client)
         {
-            //remove user from dictionary, broadcast disconnection
+            //remove user from dictionary
             string clientDisconnectedMessage = client.userName + "[Disconnected]";
             AddMessageToQueue(clientDisconnectedMessage);
-            BroadcastNewMessage(clientDisconnectedMessage);
-            Console.WriteLine(clientDisconnectedMessage);
             clientDictionary.Remove(userId);
         }
     }

@@ -18,7 +18,7 @@ namespace ChatRoom
 
         public Client(string IP, int port)
         {
-            //Create Setup method for the following
+            //Create Setup method for the following, dont put it in the constructor
             userName = UI.GetUserName();
             clientSocket = new TcpClient();
             try
