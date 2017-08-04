@@ -80,9 +80,9 @@ namespace Server
             }
         }
 
-        private void AddMessageToQueue(string clientMessage)
+        private void AddMessageToQueue(string message)
         {
-            messageQueue.Enqueue(clientMessage);
+            messageQueue.Enqueue(message);
         }
 
         private void BroadcastNewMessage(string clientMessage)
@@ -107,8 +107,11 @@ namespace Server
 
         private void RemoveClient(string userId, Client client)
         {
-            //remove user from dictionary
-            Console.WriteLine("{0} [Disconnected]", client.userName);
+            //remove user from dictionary, broadcast disconnection
+            string clientDisconnectedMessage = client.userName + "[Disconnected]";
+            AddMessageToQueue(clientDisconnectedMessage);
+            BroadcastNewMessage(clientDisconnectedMessage);
+            Console.WriteLine(clientDisconnectedMessage);
             clientDictionary.Remove(userId);
         }
     }
