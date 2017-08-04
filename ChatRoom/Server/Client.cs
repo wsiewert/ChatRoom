@@ -22,7 +22,7 @@ namespace Server
 
             byte[] recievedUserName = new byte[256];
             stream.Read(recievedUserName, 0, recievedUserName.Length);
-            string recievedUserNameString = Encoding.ASCII.GetString(recievedUserName);
+            string recievedUserNameString = Encoding.ASCII.GetString(recievedUserName).TrimEnd('\0');
             userName = recievedUserNameString;
         }
 
@@ -31,16 +31,7 @@ namespace Server
             //FIX TRY CATCH
             Console.WriteLine("<send();> " + userName);
             byte[] message = Encoding.ASCII.GetBytes(Message);
-            try
-            {
-                stream.Write(message, 0, message.Count());
-            }
-            catch (System.IO.IOException)
-            {
-                Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine("System.IO.IOException");
-                Console.ResetColor();
-            }
+            stream.Write(message, 0, message.Count());
         }
 
         public string Recieve()
@@ -49,7 +40,7 @@ namespace Server
             byte[] recievedMessage = new byte[256];
             stream.Read(recievedMessage, 0, recievedMessage.Length);
             string recievedMessageString = Encoding.ASCII.GetString(recievedMessage).TrimEnd('\0');
-            return recievedMessageString;
+            return "[" + userName + "] " +recievedMessageString;
             //possibly add message to private client queue.
         }
     }
