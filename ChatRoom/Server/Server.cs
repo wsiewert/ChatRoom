@@ -12,7 +12,6 @@ namespace Server
 {
     class Server
     {
-        //public static Client client;
         Dictionary<string, Client> clientDictionary = new Dictionary<string, Client>();
         Queue<string> messageQueue = new Queue<string>();
         TcpListener server;
@@ -55,7 +54,6 @@ namespace Server
             newClient.UserId = userId;
             clientDictionary.Add(newClient.UserId, newClient);
             AddMessageToQueue(newClient.userName + "[Logged In]");
-            
 
             //Task client.recieving...
             Task clientMessageReceiving = new Task(() => CheckIncomingCientMessages(newClient));
@@ -84,11 +82,13 @@ namespace Server
         {
             while (true)
             {
-                if (messageQueue.Count > 0)
+                //Only broadcast messages when clients are in chatroom
+                if (messageQueue.Count > 0 && clientDictionary.Count > 0)
                 {
                     for (int i = 0; i < messageQueue.Count; i++)
                     {
-                        BroadcastNewMessage(messageQueue.Dequeue());
+                        Console.WriteLine("<CheckMessageQueue();>");
+                            BroadcastNewMessage(messageQueue.Dequeue());
                         //add to .txt file
                     }
                 }
@@ -105,6 +105,7 @@ namespace Server
         {
             foreach (KeyValuePair<string, Client> client in clientDictionary)
             {
+                Console.WriteLine("<BroadcastNewMessage();>");
                 client.Value.Send(clientMessage);
             }
         }

@@ -31,29 +31,23 @@ namespace Server
         }
         public void Send(string Message)
         {
+            Console.WriteLine("<send();> " + userName);
             byte[] message = Encoding.ASCII.GetBytes(Message);
-            stream.Write(message, 0, message.Count());
+            try
+            {
+                stream.Write(message, 0, message.Count());
+            }
+            catch (System.IO.IOException)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("System.IO.IOException");
+                Console.ResetColor();
+            }
         }
-
-        //private void GetMessages()
-        //{
-        //    bool continueRecieving = true;
-        //    while (continueRecieving)
-        //    {
-        //        try
-        //        {
-        //            Recieve();
-        //        }
-        //        catch (Exception)
-        //        {
-        //            Console.WriteLine(userName + "[Disconnected]");
-        //            continueRecieving = false;
-        //        }
-        //    }
-        //}
 
         public string Recieve()
         {
+            Console.WriteLine("<Recieve();> " + userName);
             byte[] recievedMessage = new byte[256];
             stream.Read(recievedMessage, 0, recievedMessage.Length);
             string recievedMessageString = Encoding.ASCII.GetString(recievedMessage);

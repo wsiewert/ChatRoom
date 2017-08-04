@@ -11,12 +11,7 @@ namespace ChatRoom
         static void Main(string[] args)
         {
             Client client = new Client("127.0.0.1", 9999);
-
-            //New thread asking for user input to send
-            client.Send();
-            //New thread recieving network messages
-            client.Recieve();
-
+            Console.WriteLine("Anykey to continue...");
             Console.ReadLine();
         }
     }

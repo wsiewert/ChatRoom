@@ -18,6 +18,7 @@ namespace ChatRoom
 
         public Client(string IP, int port)
         {
+            //create Task to check if server connection still valid. (try catch in Send(); method)
             //Create Setup method for the following, dont put it in the constructor
             userName = UI.GetUserName();
             clientSocket = new TcpClient();
@@ -32,18 +33,41 @@ namespace ChatRoom
             {
                 Console.WriteLine("Server Not Found");
             }
+
+            Task recieveMessages = new Task(() => RecieveMessages());
+            recieveMessages.Start();
+
+            Send();
         }
+
+        public void RecieveMessages()
+        {
+            while (true)
+            {
+                Recieve();
+            }
+        }
+
         public void Send()
         {
             string messageString = UI.GetInput();
             byte[] message = Encoding.ASCII.GetBytes(messageString);
             stream.Write(message, 0, message.Count());
+            Send();
         }
+
         public void Recieve()
         {
             byte[] recievedMessage = new byte[256];
             stream.Read(recievedMessage, 0, recievedMessage.Length);
             UI.DisplayMessage(Encoding.ASCII.GetString(recievedMessage));
+            Console.WriteLine("<Recieved Message>");
+        }
+
+        private string TrimByteArrayMessage()
+        {
+            //Trim extra nulls at end of byte[]
+            return "";
         }
     }
 }
