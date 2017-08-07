@@ -38,7 +38,7 @@ namespace ChatRoom
             {
                 Console.WriteLine("Server Not Found");
             }
-            
+            UI.DisplayChatRoomOptions();
             Send();
         }
 
