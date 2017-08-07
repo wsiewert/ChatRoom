@@ -25,11 +25,9 @@ namespace Server
 
         public void Run()
         {
-            //Thread to accept new clients
             Task checkNewClients = new Task(() => GetClients());
             checkNewClients.Start();
 
-            //Thread to check for new messages
             Task checkNewMessages = new Task(() => CheckMessageQueue());
             checkNewMessages.Start();
         }
@@ -56,7 +54,6 @@ namespace Server
             string loginMessage = newClient.userName + " [Logged In]";
             AddMessageToQueue(loginMessage);
 
-            //Task client.recieving...
             Task clientMessageReceiving = new Task(() => CheckIncomingCientMessages(newClient));
             clientMessageReceiving.Start();
         }
@@ -83,14 +80,13 @@ namespace Server
         {
             while (true)
             {
-                //Only broadcast messages when clients are in chatroom
+                //add Lock to client dictionary to stop collisions between tasks:
+                //(clientMessageReceiving) & (checkMessageQueue)
                 if (messageQueue.Count > 0 && clientDictionary.Count > 0)
                 {
                     for (int i = 0; i < messageQueue.Count; i++)
                     {
-                        Console.WriteLine("<CheckMessageQueue();>");
                             BroadcastNewMessage(messageQueue.Dequeue());
-                        //add to .txt file
                     }
                 }
             }            
@@ -106,22 +102,13 @@ namespace Server
         {
             foreach (KeyValuePair<string, Client> client in clientDictionary)
             {
-                Console.WriteLine("<BroadcastNewMessage();>");
                 client.Value.Send(clientMessage);
             }
         }
 
-        private void Respond(string body)
-        {
-            //client.Send(body);
-            //make into async task. UpdateMessageQueue();
-            //try catch per client to see if someone disconnected during a message broadcast, then delete person from dictionary
-        }
-
         private void RemoveClient(string userId, Client client)
         {
-            //remove user from dictionary
-            string clientDisconnectedMessage = client.userName + "[Disconnected]";
+            string clientDisconnectedMessage = client.userName + " [Disconnected]";
             AddMessageToQueue(clientDisconnectedMessage);
             clientDictionary.Remove(userId);
         }

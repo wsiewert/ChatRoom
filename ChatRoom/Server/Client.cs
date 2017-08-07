@@ -28,20 +28,16 @@ namespace Server
 
         public void Send(string Message)
         {
-            //FIX TRY CATCH
-            Console.WriteLine("<send();> " + userName);
             byte[] message = Encoding.ASCII.GetBytes(Message);
             stream.Write(message, 0, message.Count());
         }
 
         public string Recieve()
         {
-            Console.WriteLine("<Recieve();> " + userName);
             byte[] recievedMessage = new byte[256];
             stream.Read(recievedMessage, 0, recievedMessage.Length);
             string recievedMessageString = Encoding.ASCII.GetString(recievedMessage).TrimEnd('\0');
             return "[" + userName + "] " +recievedMessageString;
-            //possibly add message to private client queue.
         }
     }
 }
