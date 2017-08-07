@@ -16,10 +16,13 @@ namespace ChatRoom
 
         public string UserName { get { return userName; } set { userName = value; } }
 
-        public Client(string IP, int port)
+        public Client()
         {
-            //create Task to check if server connection still valid. (try catch in Send(); method)
-            //Create Setup method for the following, dont put it in the constructor
+
+        }
+
+        public void SetupClient(string IP, int port)
+        {
             userName = UI.GetUserName();
             clientSocket = new TcpClient();
             try
