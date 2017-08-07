@@ -31,15 +31,14 @@ namespace ChatRoom
                 stream = clientSocket.GetStream();
                 byte[] userNameMessage = Encoding.ASCII.GetBytes(userName);
                 stream.Write(userNameMessage, 0, userNameMessage.Count());
+                Task recieveMessages = new Task(() => RecieveMessages());
+                recieveMessages.Start();
             }
             catch (Exception)
             {
                 Console.WriteLine("Server Not Found");
             }
-
-            Task recieveMessages = new Task(() => RecieveMessages());
-            recieveMessages.Start();
-
+            
             Send();
         }
 
@@ -54,7 +53,10 @@ namespace ChatRoom
         public void Send()
         {
             string messageString = UI.GetInput();
-            //if messageString 'exit', Environment.Exit(0);
+            if (messageString.ToLower() == "exit")
+            {
+                Environment.Exit(0);
+            }
             byte[] message = Encoding.ASCII.GetBytes(messageString);
             stream.Write(message, 0, message.Count());
             Send();
@@ -65,7 +67,6 @@ namespace ChatRoom
             byte[] recievedMessage = new byte[256];
             stream.Read(recievedMessage, 0, recievedMessage.Length);
             UI.DisplayMessage(Encoding.ASCII.GetString(recievedMessage).TrimEnd('\0'));
-            //Console.WriteLine("<Recieved Message>");
         }
     }
 }
